@@ -14,10 +14,15 @@ class Trie(object):
 	
 	def parse(self, str):
 		current_node = self.root
-		for key in str:
+		for key in str + '$':
 			if key not in current_node:
-				return False
+				if '$' in current_node:
+					return True
+				else:
+					return False
 			else:
 				current_node = current_node[key]
-		return True
+				if key == '$':
+					return True
+		return False
 			
