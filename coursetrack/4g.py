@@ -1,6 +1,5 @@
 import sys
-
-sys.setrecursionlimit(1000000)
+import Queue
 
 def combine(st1,st2):
 	assert st1[1::] == st2[0:len(st2)-1]
@@ -16,35 +15,32 @@ patterns = []
 for line in sys.stdin:
 	patterns.append( line.rstrip() )
 
-finals = []
-def find(current_kmer, total_string, patterns_left):
-	# base case
-	if len(patterns_left) == 0:
-		#finals.append(total_string)
-		#return
-		st = total_string[0]
-		for i in range(1, len(total_string)):
-			st += total_string[i][ len(total_string[i])-1 ]
-		print st
-		sys.exit(0)
-	# find kmers in patterns_left that will match
-	for pattern_left in patterns_left:
-		if can_combine(current_kmer, pattern_left):
-			new_total_string = list(total_string)
-			new_total_string.append(pattern_left)
-			new_patterns_left = list(patterns_left)
-			new_patterns_left.remove(pattern_left)
-			find(pattern_left, new_total_string, new_patterns_left)
-		
-for pattern in patterns:		
-	new_patterns = list(patterns)
-	new_patterns.remove(pattern)
-	find(pattern, [pattern], new_patterns)
+	
+def bfs():
+	Q = Queue.Queue()
+	V = set()
+	for pattern in patterns:
+		new_patterns = list(patterns)
+		new_patterns.remove(pattern)
+		node = {'current_kmer': pattern, 'total_string': [pattern], 'patterns_left': new_patterns }
+		Q.put(node)
+	while not Q.empty():
+		t = Q.get()
+		if len(t['patterns_left']) == 0:
+			return t['total_string']
+		for pattern_left in t['patterns_left']:
+			if can_combine(t['current_kmer'], pattern_left):
+				new_total_string = list(t['total_string'])
+				new_total_string.append(pattern_left)
+				new_patterns_left = list(t['patterns_left'])
+				new_patterns_left.remove(pattern_left)
+				node = {'current_kmer': pattern_left, 'total_string': new_total_string, 'patterns_left': new_patterns_left }
+				Q.put(node)
 
-"""
-for final in finals:
-	st = final[0]
-	for i in range(1, len(final)):
-		st += final[i][ len(final[i])-1 ]
-	print st
-"""
+				
+
+final = bfs()
+st = final[0]
+for i in range(1, len(final)):
+	st += final[i][ len(final[i])-1 ]
+print st
