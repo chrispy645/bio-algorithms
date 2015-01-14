@@ -6,15 +6,18 @@ def match(st1,st2):
 	assert len(st1) == len(st2)
 	return st1[1::] == st2[0:len(st2)-1]
 
-k = int( sys.stdin.readline().rstrip() ) - 1
-text = sys.stdin.readline().rstrip()
-patterns = []
-for i in range(0, len(text) - k + 1):
-	patterns.append( text[i:i+k] )
-	
+patterns = set()
+k = 0
+for line in sys.stdin:
+	line = line.rstrip()
+	k = len(line)-1
+	for i in range(0, len(line) - k + 1):
+		patterns.add( line[i:i+k] )
 
-	
 graph = dict()
+
+patterns = list(patterns)
+print patterns
 	
 for i in range(0, len(patterns)):
 	for j in range(0, len(patterns)):
