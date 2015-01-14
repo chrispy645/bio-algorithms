@@ -86,8 +86,12 @@ def best_m_alphabet(spectrum, m):
 def leaderboard(spectrum, N, alphabet):
 	leaderboard = [ ([], 0) ]
 	leader_peptide = []
+	backup=None
 	while len(leaderboard) != 0:
-		backup = list(leaderboard)
+	
+		#backup = list(leaderboard)
+		backup = leaderboard[0]
+		
 		# leaderboard <- expand(leaderboard)
 		new_candidates = []
 		for peptide in leaderboard:
@@ -105,12 +109,15 @@ def leaderboard(spectrum, N, alphabet):
 				to_remove.append(peptide)
 		for elem in to_remove:
 			leaderboard.remove(elem)
-		if backup == leaderboard:
+		
+		leaderboard = sorted(leaderboard, reverse=True, key=lambda tup: tup[1])
+		if backup == leaderboard[0]:
 			break
-		print leaderboard
+			
+			
 		# cut from leaderboard
 		leaderboard = ldr_best_n(leaderboard, N)	
-		#print leaderboard
+		print leaderboard
 	return leader_peptide
 	
 M = int(sys.stdin.readline())
@@ -122,4 +129,5 @@ print "alphabet = " + str(alphabet)
 print
 solution = leaderboard(spectrum, N, alphabet)
 
+print score(solution, spectrum)
 print "-".join( [str(x) for x in solution] )
